@@ -1,0 +1,38 @@
+ADULT
+
+   (
+       SELECT TOP 1  
+       RTRIM(ISNULL(statute.scp_sectionCodeType, charge.scp_manualChargeCode) + ' ' + ISNULL(statute.sectionCode, charge.scp_manualCharge))
+       + RTRIM(' ' + dbo.LKP_LABEL('STATUTE_CATEGORY', ISNULL(statute.category,charge.scp_manualChargeCategory)))
+       FROM 
+         ecourt.tCharge charge
+         JOIN ecourt.tParty party
+         ON party.id = charge.associatedParty_id
+         JOIN ecourt.tCase
+         ON tCase.id = party.case_id
+         LEFT JOIN ecourt.tStatute statute
+         ON statute.id = charge.statute_id
+         WHERE partyType = 'DEF'
+         AND tCase.id = @caseId
+       ORDER BY ISNULL(statute.scp_hierarchy, '999999') 
+       );
+
+
+
+Juvenile
+   (
+       SELECT TOP 1  
+       RTRIM(ISNULL(statute.scp_sectionCodeType, charge.scp_manualChargeCode) + ' ' + ISNULL(statute.sectionCode, charge.scp_manualCharge))
+       + RTRIM(' ' + dbo.LKP_LABEL('STATUTE_CATEGORY', ISNULL(statute.category,charge.scp_manualChargeCategory)))
+       FROM 
+         ecourt.tCharge charge
+         JOIN ecourt.tParty party
+         ON party.id = charge.associatedParty_id
+         JOIN ecourt.tCase
+         ON tCase.id = party.case_id
+         LEFT JOIN ecourt.tStatute statute
+         ON statute.id = charge.statute_id
+         WHERE partyType = 'MINOR'
+         AND tCase.id = @caseId
+       ORDER BY ISNULL(statute.scp_hierarchy, '999999') 
+       );
